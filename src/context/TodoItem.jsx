@@ -1,24 +1,22 @@
-// src/components/TodoItem.jsx - HOÀN HẢO, KHÔNG BUG, KHÔNG DRAMA
+// src/components/TodoItem.jsx 
 import { useState } from 'react';
 import { useTodo } from '../context/TodoContext';
 
 export default function TodoItem({ todo }) {
-  const { updateTodo, deleteTodo } = useTodo();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editTitle, setEditTitle] = useState(todo.title);
+  const { updateTodo, deleteTodo } = useTodo(); //usecontext để không phải truyền dữ liệu qua các cấp giữa // lấy dữ liệu từ todocontext
+  const [isEditing, setIsEditing] = useState(false); //để biết trạng thái của task là đang xem hay sửa
+  const [editTitle, setEditTitle] = useState(todo.title);//lưu tạm nội dung đang gõ nhấn 'lưu' mới chính thức cập nhật
 
   const toggleComplete = () => {
-    updateTodo(todo.id, { completed: !todo.completed });
+    updateTodo(todo.id, { completed: !todo.completed }); //check box để hoàn thành task
   };
 
   const handleSave = (e) => {
     if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.target.blur(); // ← FIX BUG TRÙNG NÚT LƯU/SỬA 100%
+      e.target.blur(); //fix bug nút sửa và lưu trùng nhau click 1 được 2
     }
 
-    const trimmed = editTitle.trim();
+    const trimmed = editTitle.trim(); //xóa bớt kí tự space thừa 
     if (trimmed && trimmed !== todo.title) {
       updateTodo(todo.id, { title: trimmed });
     }
@@ -66,7 +64,7 @@ export default function TodoItem({ todo }) {
         {isEditing ? (
           <button
             onClick={handleSave}
-            onMouseDown={(e) => e.preventDefault()} // thêm dòng này cho chắc
+            onMouseDown={(e) => e.preventDefault()} // bug nhấn cùng lúc 2 nút sửa và lưu
             className="text-green-600 hover:text-green-800 font-bold text-sm"
           >
             Lưu

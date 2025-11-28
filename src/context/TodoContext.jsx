@@ -1,21 +1,23 @@
 // src/context/TodoContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 
-const TodoContext = createContext();
+const TodoContext = createContext(); //lưu dữ liệu dùng chung
 
 export function TodoProvider({ children }) {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const API_URL = 'https://jsonplaceholder.typicode.com/todos';
 
   useEffect(() => {
-    fetchTodos();
+    fetchTodos(); //tự động lấy dữ liệu khi mở app
   }, []);
 
   const fetchTodos = async () => {
     try {
       setLoading(true);
+      setError(null);
       const res = await fetch(`${API_URL}?userId=1&_limit=10`);
       const data = await res.json();
       setTodos(data);
@@ -25,8 +27,19 @@ export function TodoProvider({ children }) {
       setLoading(false);
     }
   };
+//   const fetchTodos = async () => { //test loading/error
+//   setLoading(true);
+//   setError(null);
 
-  const addTodo = async (title) => {
+//   // đang tải 5 giây
+//   await new Promise(resolve => setTimeout(resolve, 5000));
+
+//   // lỗi
+//   setError('Mất mạng rồi !');
+//   setLoading(false);
+// };
+
+  const addTodo = async (title) => { //thêm
     if (!title.trim()) return;
 
     const newTodo = {
@@ -36,7 +49,7 @@ export function TodoProvider({ children }) {
       userId: 1
     };
 
-    setTodos([newTodo, ...todos]);
+    setTodos([newTodo, ...todos]); //sửa
 
     try {
       await fetch(API_URL, {
@@ -61,7 +74,7 @@ export function TodoProvider({ children }) {
     } catch (err) {}
   };
 
-  const deleteTodo = async (id) => {
+  const deleteTodo = async (id) => { //xóa
     setTodos(todos.filter(todo => todo.id !== id));
 
     try {
@@ -71,8 +84,8 @@ export function TodoProvider({ children }) {
 
   return (
     <TodoContext.Provider value={{
-      todos, loading,
-      addTodo, updateTodo, deleteTodo, refetch: fetchTodos
+      todos, loading,error,
+      addTodo, updateTodo, deleteTodo, refetch: fetchTodos //gửi và nhận dữ liệu từ todoContext
     }}>
       {children}
     </TodoContext.Provider>
