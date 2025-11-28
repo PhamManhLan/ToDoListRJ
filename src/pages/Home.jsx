@@ -5,7 +5,6 @@ export default function Home() {
   return (
     <div className="text-center py-20">
       <h2 className="text-4xl font-bold mb-6">Chào mừng đến Todo App CRUD</h2>
-      <p className="text-xl mb-8">Quản lý công việc siêu nhanh với Context + React Router</p>
       <Link 
         to="/todos" 
         className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg hover:bg-blue-700"
