@@ -1,6 +1,6 @@
 // src/components/TodoForm.jsx
 import { useState } from 'react';
-import { useTodo } from './TodoContext';
+import { useTodo } from '../context/TodoContext';
 
 export default function TodoForm() {
   const [title, setTitle] = useState('');

@@ -1,6 +1,6 @@
 // src/pages/Todos.jsx
-import TodoForm from '../context/TodoForm';
-import TodoList from '../context/TodoList';
+import TodoForm from '../components/TodoForm';
+import TodoList from '../components/TodoList';
 
 export default function Todos() {
   return (

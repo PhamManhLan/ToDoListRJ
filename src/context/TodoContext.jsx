@@ -1,91 +1,64 @@
 // src/context/TodoContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
+import { todoApi } from '../api/todoApi';
 
-const TodoContext = createContext(); //lưu dữ liệu dùng chung
+const TodoContext = createContext();
 
 export function TodoProvider({ children }) {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const API_URL = 'https://jsonplaceholder.typicode.com/todos';
-
-  useEffect(() => {
-    fetchTodos(); //tự động lấy dữ liệu khi mở app
-  }, []);
-
   const fetchTodos = async () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch(`${API_URL}?userId=1&_limit=10`);
-      const data = await res.json();
+      const data = await todoApi.fetchTodos({
+        userId: 1,
+        _limit: 10,
+        // _start: 0,        //lấy từ trang 0,1,2....
+        // completed: false, //lấy todo chưa xong
+      });
       setTodos(data);
     } catch (err) {
-      console.error(err);
+      setError('Không tải được danh sách công việc');
     } finally {
       setLoading(false);
     }
   };
-//   const fetchTodos = async () => { //test loading/error
-//   setLoading(true);
-//   setError(null);
 
-//   // đang tải 5 giây
-//   await new Promise(resolve => setTimeout(resolve, 5000));
+  useEffect(() => {
+    fetchTodos();
+  }, []);
 
-//   // lỗi
-//   setError('Mất mạng rồi !');
-//   setLoading(false);
-// };
-
-  const addTodo = async (title) => { //thêm
+  // Thêm 
+  const addTodo = async (title) => {
     if (!title.trim()) return;
-
-    const newTodo = {
-      id: Date.now(),
-      title: title.trim(),
-      completed: false,
-      userId: 1
-    };
-
-    setTodos([newTodo, ...todos]); //sửa
-
-    try {
-      await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-type': 'application/json' },
-        body: JSON.stringify(newTodo)
-      });
-    } catch (err) {}
+    const newTodo = { id: Date.now(), title: title.trim(), completed: false, userId: 1 };
+    setTodos([newTodo, ...todos]);
+    await todoApi.addTodo(newTodo).catch(() => fetchTodos()); // nếu lỗi thì reload
   };
 
+  // Sửa
   const updateTodo = async (id, updates) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, ...updates } : todo
-    ));
-
-    try {
-      await fetch(`${API_URL}/${id}`, {
-        method: 'PUT',
-        body: JSON.stringify(updates),
-        headers: { 'Content-type': 'application/json' }
-      });
-    } catch (err) {}
+    setTodos(todos.map(t => t.id === id ? { ...t, ...updates } : t));
+    await todoApi.updateTodo(id, updates).catch(() => fetchTodos());
   };
 
-  const deleteTodo = async (id) => { //xóa
-    setTodos(todos.filter(todo => todo.id !== id));
-
-    try {
-      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    } catch (err) {}
+  // Xóa
+  const deleteTodo = async (id) => {
+    setTodos(todos.filter(t => t.id !== id));
+    await todoApi.deleteTodo(id).catch(() => fetchTodos());
   };
 
   return (
     <TodoContext.Provider value={{
-      todos, loading,error,
-      addTodo, updateTodo, deleteTodo, refetch: fetchTodos //gửi và nhận dữ liệu từ todoContext
+      todos,
+      loading,
+      error,
+      addTodo,
+      updateTodo,
+      deleteTodo,
     }}>
       {children}
     </TodoContext.Provider>

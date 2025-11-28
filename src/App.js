@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { TodoProvider } from './context/TodoContext';
-import Layout from './context/Layout';
+import Layout from './layout/Layout';
 import Home from './pages/Home';
 import Todos from './pages/Todos';
 import NotFound from './pages/NotFound';
