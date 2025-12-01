@@ -1,6 +1,5 @@
 // src/api/todoApi.js
-const API_BASE = 'https://jsonplaceholder.typicode.com/todos';
-
+import api from './axiosInstance';
 const buildQuery = (params = {}) => {
   const searchParams = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
@@ -12,32 +11,15 @@ const buildQuery = (params = {}) => {
 };
 
 export const todoApi = {
-  // Lấy danh sách
-  fetchTodos: async (params = {}) => {
-    const res = await fetch(`${API_BASE}${buildQuery(params)}`);
-    return res.json()
-  },
+  fetchTodos: (params = {}) =>
+    api.get(`/todos${buildQuery(params)}`).then(res => res.data),
 
-  // Thêm
-  addTodo: async (todo) => {
-    await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(todo),
-    });
-  },
+  addTodo: (todo) =>
+    api.post('/todos', todo).then(res => res.data),
 
-  // Sửa
-  updateTodo: async (id, updates) => {
-    await fetch(`${API_BASE}/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates),
-    });
-  },
+  updateTodo: (id, updates) =>
+    api.put(`/todos/${id}`, updates).then(res => res.data),
 
-  // XÓA
-  deleteTodo: async (id) => {
-    await fetch(`${API_BASE}/${id}`, { method: 'DELETE' });
-  },
+  deleteTodo: (id) =>
+    api.delete(`/todos/${id}`),
 };
